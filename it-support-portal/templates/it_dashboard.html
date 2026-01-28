@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>IT Dashboard</h2>
+<p><strong>Open Tickets:</strong> {{ open_count }}</p>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Issue</th>
+        <th>Status</th>
+        <th>Priority</th>
+        <th>Update</th>
+    </tr>
+    {% for t in tickets %}
+    <tr>
+        <form method="POST">
+            <td>{{ t.id }}</td>
+            <td>{{ t.name }}</td>
+            <td>{{ t.issue }}</td>
+            <td>
+                <select name="status">
+                    <option {{ "selected" if t.status=="Open" }}>Open</option>
+                    <option {{ "selected" if t.status=="In Progress" }}>In Progress</option>
+                    <option {{ "selected" if t.status=="Closed" }}>Closed</option>
+                </select>
+            </td>
+            <td>
+                <select name="priority">
+                    <option {{ "selected" if t.priority=="Low" }}>Low</option>
+                    <option {{ "selected" if t.priority=="Medium" }}>Medium</option>
+                    <option {{ "selected" if t.priority=="High" }}>High</option>
+                </select>
+            </td>
+            <td>
+                <input type="hidden" name="ticket_id" value="{{ t.id }}">
+                <button type="submit">Save</button>
+            </td>
+        </form>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

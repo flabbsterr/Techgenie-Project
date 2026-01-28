@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Tickets</h2>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Issue</th>
+        <th>Status</th>
+        <th>Priority</th>
+    </tr>
+    {% for t in tickets %}
+    <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.issue }}</td>
+        <td>{{ t.status }}</td>
+        <td>{{ t.priority }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

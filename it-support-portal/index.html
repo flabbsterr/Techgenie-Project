@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support Portal</title>
+    <link rel="stylesheet" href="css/support-portal.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>IT Support Portal</h1>
+            <nav>
+                <a href="#" onclick="showPage('log-ticket')">Log Ticket</a> |
+                <a href="#" onclick="showPage('my-tickets')">My Tickets</a> |
+                <a href="#" onclick="showPage('it-dashboard')">IT Dashboard</a>
+            </nav>
+            <hr>
+        </header>
+
+        <main>
+            <!-- Log Ticket Page -->
+            <div id="log-ticket" class="page">
+                <h2>Log an IT Issue</h2>
+                <form id="log-form" onsubmit="submitTicket(event)">
+                    <label for="name">Your Name:</label><br>
+                    <input type="text" id="name" name="name" required><br><br>
+
+                    <label for="issue">Issue Description:</label><br>
+                    <textarea id="issue" name="issue" required></textarea><br><br>
+
+                    <button type="submit">Submit Ticket</button>
+                </form>
+            </div>
+
+            <!-- My Tickets Page -->
+            <div id="my-tickets" class="page" style="display:none;">
+                <h2>My Tickets</h2>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Issue</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                    </tr>
+                    <tbody id="my-tickets-list">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- IT Dashboard Page -->
+            <div id="it-dashboard" class="page" style="display:none;">
+                <h2>IT Dashboard</h2>
+                <p><strong>Open Tickets:</strong> <span id="open-count">0</span></p>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Issue</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Update</th>
+                    </tr>
+                    <tbody id="dashboard-list">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/support-portal.js"></script>
+</body>
+</html>
