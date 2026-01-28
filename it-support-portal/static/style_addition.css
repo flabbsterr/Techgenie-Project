@@ -1,0 +1,42 @@
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-container input {
+    width: 100%;
+    padding: 14px;
+    padding-right: 40px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+body.dark-mode .password-container input {
+    background-color: #2a2a2a;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+}
+
+.password-container i {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .password-container i {
+    color: #ffa500;
+}
+
+.password-container i:hover {
+    color: #333;
+}
+
+body.dark-mode .password-container i:hover {
+    color: #ff8c00;
+}

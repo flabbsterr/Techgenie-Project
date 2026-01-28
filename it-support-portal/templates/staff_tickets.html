@@ -1,20 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>My Tickets</h2>
+<h2>📋 My Tickets</h2>
+<p>View all tickets you have submitted.</p>
+{% if tickets %}
 <table>
     <tr>
         <th>ID</th>
-        <th>Issue</th>
+        <th>Issue Description</th>
         <th>Status</th>
         <th>Priority</th>
     </tr>
     {% for t in tickets %}
     <tr>
-        <td>{{ t.id }}</td>
+        <td><strong>#{{ t.id }}</strong></td>
         <td>{{ t.issue }}</td>
-        <td>{{ t.status }}</td>
-        <td>{{ t.priority }}</td>
+        <td>
+            {% if t.status == "Open" %}
+                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">🔴 {{ t.status }}</span>
+            {% elif t.status == "In Progress" %}
+                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">🟡 {{ t.status }}</span>
+            {% else %}
+                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">🟢 {{ t.status }}</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if t.priority == "High" %}
+                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">⚠️ {{ t.priority }}</span>
+            {% elif t.priority == "Medium" %}
+                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">ℹ️ {{ t.priority }}</span>
+            {% else %}
+                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">✓ {{ t.priority }}</span>
+            {% endif %}
+        </td>
     </tr>
     {% endfor %}
 </table>
+{% else %}
+<p style="text-align: center; color: #999; padding: 40px 0;">No tickets found. <a href="/log">Log a new ticket</a></p>
+{% endif %}
 {% endblock %}

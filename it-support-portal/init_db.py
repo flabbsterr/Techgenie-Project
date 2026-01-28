@@ -2,7 +2,14 @@ import sqlite3
 
 conn = sqlite3.connect("tickets.db")
 conn.execute("""
-    CREATE TABLE tickets (
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )
+""")
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS tickets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         issue TEXT NOT NULL,
@@ -12,3 +19,5 @@ conn.execute("""
 """)
 conn.commit()
 conn.close()
+
+print("Database initialized successfully!")

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - IT Support Portal</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <h1>IT Support</h1>
+        <h2>Create Account</h2>
+        
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        
+        <form method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required autofocus>
+            
+            <label for="password">Password:</label>
+            <div class="password-container">
+                <input type="password" id="password" name="password" required maxlength="15">
+                <i class="fas fa-eye" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+            </div>
+            
+            <label for="confirm_password">Confirm Password:</label>
+            <div class="password-container">
+                <input type="password" id="confirm_password" name="confirm_password" required maxlength="15">
+                <i class="fas fa-eye" id="toggleConfirmPassword" onclick="toggleConfirmPasswordVisibility()"></i>
+            </div>
+            
+            <button type="submit">Sign Up</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px;">
+            Already have an account? <a href="/login">Login here</a>
+        </p>
+    </div>
+
+    <script>
+        // Load dark mode preference from localStorage
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePassword');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        function toggleConfirmPasswordVisibility() {
+            const confirmPasswordInput = document.getElementById('confirm_password');
+            const toggleIcon = document.getElementById('toggleConfirmPassword');
+            
+            if (confirmPasswordInput.type === 'password') {
+                confirmPasswordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                confirmPasswordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>
