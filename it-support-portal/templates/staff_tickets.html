@@ -6,13 +6,16 @@
 <table>
     <tr>
         <th>ID</th>
+        <th>Name</th>
         <th>Issue Description</th>
         <th>Status</th>
         <th>Priority</th>
+        <th>Actions</th>
     </tr>
     {% for t in tickets %}
     <tr>
         <td><strong>#{{ t.id }}</strong></td>
+        <td>{{ t.name }}</td>
         <td>{{ t.issue }}</td>
         <td>
             {% if t.status == "Open" %}
@@ -31,10 +34,59 @@
             {% else %}
                 <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
             {% endif %}
+        <td>
+            <button class="small" onclick="editTicket({{ t.id }}, `{{ t.name|replace('`', '\\`') }}`, `{{ t.issue|replace('`', '\\`') }}`)">Edit</button>
+            <span onclick="deleteTicket({{ t.id }})" style="color: #d32f2f; cursor: pointer; font-size: 14px; float: right;">🗑️</span>
         </td>
+        
     </tr>
     {% endfor %}
 </table>
+
+<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 12px; width: 500px;">
+        <h3>Edit Ticket</h3>
+        <form method="POST" action="/edit-ticket">
+            <input type="hidden" id="editTicketId" name="ticket_id">
+            <label>Name:</label>
+            <input type="text" id="editName" name="name" required>
+            <label>Issue Description:</label>
+            <textarea id="editIssue" name="issue" required minlength="25" maxlength="250"></textarea>
+            <div style="margin-top: 20px;">
+                <button type="submit">Save Changes</button>
+                <button type="button" onclick="closeEditModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function editTicket(id, name, issue) {
+    document.getElementById('editTicketId').value = id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editIssue').value = issue;
+    document.getElementById('editModal').style.display = 'block';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+function deleteTicket(id) {
+    if (confirm('Delete this ticket?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/delete-ticket';
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'ticket_id';
+        input.value = id;
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 {% else %}
 <p style="text-align: center; color: #999; padding: 40px 0;">No tickets found. <a href="/log">Log a new ticket</a></p>
 {% endif %}

@@ -30,25 +30,39 @@
     {% for t in tickets %}
     <tr>
         <td><strong>#{{ t.id }}</strong></td>
-        <td>{{ t.name }}</td>
+        <td>{{ t.name }} ({{ t.username }})</td>
         <td>{{ t.issue }}</td>
         <td>
-            <form method="POST" style="display: inline;">
-                <select name="status" style="padding: 6px; border-radius: 4px;">
+            {% if t.status == "Open" %}
+                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
+            {% elif t.status == "In Progress" %}
+                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
+            {% else %}
+                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if t.priority == "High" %}
+                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
+            {% elif t.priority == "Medium" %}
+                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
+            {% else %}
+                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
+            {% endif %}
+        </td>
+        <td>
+            <form method="POST" style="display: flex; gap: 5px; align-items: center;">
+                <input type="hidden" name="ticket_id" value="{{ t.id }}">
+                <select name="status" style="padding: 4px; font-size: 12px;">
                     <option value="Open" {% if t.status == "Open" %}selected{% endif %}>Open</option>
                     <option value="In Progress" {% if t.status == "In Progress" %}selected{% endif %}>In Progress</option>
                     <option value="Closed" {% if t.status == "Closed" %}selected{% endif %}>Closed</option>
                 </select>
-        </td>
-        <td>
-                <select name="priority" style="padding: 6px; border-radius: 4px;">
+                <select name="priority" style="padding: 4px; font-size: 12px;">
                     <option value="Low" {% if t.priority == "Low" %}selected{% endif %}>Low</option>
                     <option value="Medium" {% if t.priority == "Medium" %}selected{% endif %}>Medium</option>
                     <option value="High" {% if t.priority == "High" %}selected{% endif %}>High</option>
                 </select>
-        </td>
-        <td>
-                <input type="hidden" name="ticket_id" value="{{ t.id }}">
                 <button type="submit" class="small">Update</button>
             </form>
         </td>

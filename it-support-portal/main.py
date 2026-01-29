@@ -5,18 +5,14 @@ from sqlalchemy.orm import Session
 from typing import Optional
 import uvicorn
 
-# Import modules
-import database
-import models
-import auth
-import ui
-import services
-import config
+from src.database import database, models
+from src.auth import auth
+from src.routes import ui
+from src.services import services
+from src.config import config
 
-# Create FastAPI app
-app = FastAPI(title=config.config.APP_NAME, version=config.config.VERSION)
+app = FastAPI(title=config.APP_NAME, version=config.VERSION)
 
-# Add middleware
 @app.middleware("http")
 async def add_user_to_request(request: Request, call_next):
     token = request.cookies.get("access_token")
@@ -24,13 +20,9 @@ async def add_user_to_request(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# Mount static files
-app.mount("/static", StaticFiles(directory=config.config.STATIC_DIR), name="static")
-
-# Create database tables
+app.mount("/static", StaticFiles(directory="static"), name="static")
 models.Base.metadata.create_all(bind=database.engine)
 
-# Dependency functions
 def get_db():
     db = database.SessionLocal()
     try:
@@ -43,7 +35,6 @@ def get_current_user(token: Optional[str] = Cookie(None, alias="access_token")):
         return None
     return auth.verify_token(token)
 
-# Routes
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, current_user: str = Depends(get_current_user)):
     return await ui.home(request, current_user)
@@ -101,4 +92,4 @@ async def delete_account(request: Request, current_user: str = Depends(get_curre
     return await ui.delete_account(request, current_user, db)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=config.config.HOST, port=config.config.PORT, reload=config.config.DEBUG)
+    uvicorn.run(app, host=config.HOST, port=config.PORT, reload=config.DEBUG)

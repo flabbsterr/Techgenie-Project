@@ -9,8 +9,8 @@
 <div class="profile-info">
     <div class="profile-card">
         <h3>Account Information</h3>
-        <p><strong>Username:</strong> {{ session.username }}</p>
-        <p><strong>Account Type:</strong> {% if session.username == 'it' %}IT Administrator{% else %}Staff Member{% endif %}</p>
+        <p><strong>Username:</strong> {{ request.state.user }}</p>
+        <p><strong>Account Type:</strong> {% if request.state.user_permission >= 1 %}IT Administrator{% else %}Staff Member{% endif %}</p>
         <p><strong>Status:</strong> <span style="color: #51cf66;">Active</span></p>
     </div>
     
@@ -187,10 +187,26 @@ function hideChangePassword() {
     document.getElementById('changePasswordForm').style.display = 'none';
 }
 
+function hideDeleteForm() {
+    document.getElementById('deleteAccountForm').style.display = 'none';
+}
+
 function confirmDelete() {
-    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-        window.location.href = '/delete-account';
-    }
+    document.getElementById('deleteAccountForm').style.display = 'block';
 }
 </script>
+
+<div id="deleteAccountForm" style="display: none; margin-top: 20px;">
+    <form method="POST" action="/delete-account">
+        <h3 style="color: #d32f2f;">Delete Account</h3>
+        <p style="color: #d32f2f;">This action cannot be undone. Please enter your password to confirm.</p>
+        <label for="delete_password">Password:</label>
+        <input type="password" id="delete_password" name="password" required>
+        <div class="form-buttons">
+            <button type="submit" class="delete-btn">Delete Account</button>
+            <button type="button" onclick="hideDeleteForm()" class="cancel-btn">Cancel</button>
+        </div>
+    </form>
+</div>
+
 {% endblock %}

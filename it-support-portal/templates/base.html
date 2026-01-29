@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Support Portal</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/table_fix.css">
 </head>
 <body>
     <header>
@@ -13,11 +14,13 @@
             <div class="nav-left">
                 <a href="/log">Log Ticket</a>
                 <a href="/my-tickets">My Tickets</a>
+                {% if request.state.user_permission and request.state.user_permission >= 1 %}
                 <a href="/it">IT Dashboard</a>
+                {% endif %}
             </div>
             <div class="nav-right">
                 <a href="/profile">Profile</a>
-                <a href="/logout">Logout ({{ session.username }})</a>
+                <a href="/logout">Logout ({{ request.state.user or 'User' }})</a>
             </div>
         </nav>
         <hr>

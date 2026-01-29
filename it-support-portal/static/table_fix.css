@@ -1,0 +1,76 @@
+/* Table fix for black rows */
+tbody tr {
+    background-color: white !important;
+}
+
+body.dark-mode tbody tr {
+    background-color: #2a2a2a !important;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fafafa !important;
+}
+
+body.dark-mode tbody tr:nth-child(even) {
+    background-color: #3a3a3a !important;
+}
+
+tbody tr:hover {
+    background-color: #f0f0f0 !important;
+}
+
+body.dark-mode tbody tr:hover {
+    background-color: #4a4a4a !important;
+}
+/* Limit issue column width */
+table td:nth-child(3) {
+    max-width: 300px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+/* Edit modal dark mode */
+body.dark-mode #editModal > div {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0;
+}
+
+body.dark-mode #editModal h3 {
+    color: #e0e0e0;
+}
+
+body.dark-mode #editModal input,
+body.dark-mode #editModal textarea {
+    background-color: #3a3a3a;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+}
+/* Remove all button styling from trash icon */
+.trash-btn {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    color: #d32f2f;
+    font-size: 12px;
+}
+
+.trash-btn:hover {
+    background: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+/* Completely remove all button styling */
+.trash-btn:focus {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.trash-btn:active {
+    background: none !important;
+    border: none !important;
+    transform: none !important;
+}

@@ -679,6 +679,8 @@ table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 25px;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 th {
@@ -687,8 +689,21 @@ th {
     padding: 18px;
     text-align: left;
     font-weight: 600;
-    border-radius: 8px 8px 0 0;
+    border-radius: 0;
     font-size: 16px;
+}
+
+th:first-child {
+    border-top-left-radius: 12px;
+}
+
+th:last-child {
+    border-top-right-radius: 12px;
+}
+
+body.dark-mode table {
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 body.dark-mode th {
