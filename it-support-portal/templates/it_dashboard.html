@@ -1,7 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>📊 IT Dashboard</h2>
-<p style="font-size: 18px; font-weight: bold; color: #667eea;">🔴 Open Tickets: <span style="background-color: #667eea; color: white; padding: 5px 15px; border-radius: 20px;">{{ open_count }}</span></p>
+<h2>IT Dashboard</h2>
+
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ open_count }}</div>
+        <div class="stat-label">Open Tickets</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ tickets|length }}</div>
+        <div class="stat-label">Total Tickets</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ closed_count }}</div>
+        <div class="stat-label">Closed Tickets</div>
+    </div>
+</div>
 
 {% if tickets %}
 <table>
@@ -21,21 +35,21 @@
         <td>
             <form method="POST" style="display: inline;">
                 <select name="status" style="padding: 6px; border-radius: 4px;">
-                    <option value="Open" {% if t.status == "Open" %}selected{% endif %}>🔴 Open</option>
-                    <option value="In Progress" {% if t.status == "In Progress" %}selected{% endif %}>🟡 In Progress</option>
-                    <option value="Closed" {% if t.status == "Closed" %}selected{% endif %}>🟢 Closed</option>
+                    <option value="Open" {% if t.status == "Open" %}selected{% endif %}>Open</option>
+                    <option value="In Progress" {% if t.status == "In Progress" %}selected{% endif %}>In Progress</option>
+                    <option value="Closed" {% if t.status == "Closed" %}selected{% endif %}>Closed</option>
                 </select>
         </td>
         <td>
                 <select name="priority" style="padding: 6px; border-radius: 4px;">
-                    <option value="Low" {% if t.priority == "Low" %}selected{% endif %}>✓ Low</option>
-                    <option value="Medium" {% if t.priority == "Medium" %}selected{% endif %}>ℹ️ Medium</option>
-                    <option value="High" {% if t.priority == "High" %}selected{% endif %}>⚠️ High</option>
+                    <option value="Low" {% if t.priority == "Low" %}selected{% endif %}>Low</option>
+                    <option value="Medium" {% if t.priority == "Medium" %}selected{% endif %}>Medium</option>
+                    <option value="High" {% if t.priority == "High" %}selected{% endif %}>High</option>
                 </select>
         </td>
         <td>
                 <input type="hidden" name="ticket_id" value="{{ t.id }}">
-                <button type="submit" class="small">💾 Update</button>
+                <button type="submit" class="small">Update</button>
             </form>
         </td>
     </tr>

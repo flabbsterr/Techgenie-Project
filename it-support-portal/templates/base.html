@@ -10,10 +10,15 @@
     <header>
         <h1>IT Support Portal</h1>
         <nav>
-            <a href="/log">Log Ticket</a>
-            <a href="/my-tickets">My Tickets</a>
-            <a href="/it">IT Dashboard</a>
-            <a href="/logout">Logout ({{ session.username }})</a>
+            <div class="nav-left">
+                <a href="/log">Log Ticket</a>
+                <a href="/my-tickets">My Tickets</a>
+                <a href="/it">IT Dashboard</a>
+            </div>
+            <div class="nav-right">
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logout ({{ session.username }})</a>
+            </div>
         </nav>
         <hr>
     </header>

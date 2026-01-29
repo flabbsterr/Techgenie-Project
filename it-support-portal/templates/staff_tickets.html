@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>📋 My Tickets</h2>
+<h2>My Tickets</h2>
 <p>View all tickets you have submitted.</p>
 {% if tickets %}
 <table>
@@ -16,20 +16,20 @@
         <td>{{ t.issue }}</td>
         <td>
             {% if t.status == "Open" %}
-                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">🔴 {{ t.status }}</span>
+                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
             {% elif t.status == "In Progress" %}
-                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">🟡 {{ t.status }}</span>
+                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
             {% else %}
-                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">🟢 {{ t.status }}</span>
+                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
             {% endif %}
         </td>
         <td>
             {% if t.priority == "High" %}
-                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">⚠️ {{ t.priority }}</span>
+                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
             {% elif t.priority == "Medium" %}
-                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">ℹ️ {{ t.priority }}</span>
+                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
             {% else %}
-                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">✓ {{ t.priority }}</span>
+                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
             {% endif %}
         </td>
     </tr>
