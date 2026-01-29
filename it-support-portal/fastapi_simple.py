@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 # Database setup
-SQLALCHEMY_DATABASE_URL = "sqlite:///./tickets_v2.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./tickets_v3.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

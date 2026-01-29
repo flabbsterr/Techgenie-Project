@@ -3,7 +3,7 @@ from typing import Optional
 
 class Config:
     # Database
-    DATABASE_URL: str = "sqlite:///./tickets_v2.db"
+    DATABASE_URL: str = "sqlite:///./tickets_v3.db"
     
     # Security
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here-change-in-production")
