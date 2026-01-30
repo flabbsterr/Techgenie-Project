@@ -5,9 +5,11 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    permission_level: int = 0
 
 class User(UserBase):
     id: int
+    permission_level: int
     
     class Config:
         orm_mode = True

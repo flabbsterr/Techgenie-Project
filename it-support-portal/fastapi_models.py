@@ -7,6 +7,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     password = Column(String)
+    permission_level = Column(Integer, default=0)  # 0=user, 1=admin, 2=manager
 
 class Ticket(Base):
     __tablename__ = "tickets"

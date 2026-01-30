@@ -17,6 +17,9 @@
                 {% if request.state.user_permission and request.state.user_permission >= 1 %}
                 <a href="/it">IT Dashboard</a>
                 {% endif %}
+                {% if request.state.user_permission and request.state.user_permission == 2 %}
+                <a href="/manager">Manager Dashboard</a>
+                {% endif %}
             </div>
             <div class="nav-right">
                 <a href="/profile">Profile</a>
@@ -29,6 +32,14 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <footer style="margin-top: 50px; padding: 20px; background-color: #f8f9fa; text-align: center; border-top: 1px solid #dee2e6;">
+        <div>
+            <h4>Need Help? Contact Support</h4>
+            <p>Phone: <strong>[PHONE_NUMBER]</strong></p>
+            <p>Email: <strong>[SUPPORT_EMAIL]</strong></p>
+        </div>
+    </footer>
 
     <script>
         // Load dark mode preference from localStorage
