@@ -988,3 +988,43 @@ body.dark-mode .stat-number {
 body.dark-mode .stat-label {
     color: #b0b0b0;
 }
+
+.footer {
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    text-align: center;
+    border-top: 1px solid #dee2e6;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    max-width: 1200px;`n    margin-left: auto;`n    margin-right: auto;`n}
+
+body.dark-mode .footer {
+    background-color: #2a2a2a;
+    border-top-color: #3a3a3a;
+    max-width: 1200px;`n    margin-left: auto;`n    margin-right: auto;`n}
+
+.footer h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+body.dark-mode .footer h4 {
+    color: #e0e0e0;
+}
+
+.footer p {
+    color: #666;
+}
+
+body.dark-mode .footer p {
+    color: #b0b0b0;
+}
+
+.footer strong {
+    color: #333;
+}
+
+body.dark-mode .footer strong {
+    color: #ffa500;
+}
+

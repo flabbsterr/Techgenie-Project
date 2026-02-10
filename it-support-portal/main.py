@@ -16,7 +16,19 @@ app = FastAPI(title=config.APP_NAME, version=config.VERSION)
 @app.middleware("http")
 async def add_user_to_request(request: Request, call_next):
     token = request.cookies.get("access_token")
-    request.state.user = auth.verify_token(token) if token else None
+    username = auth.verify_token(token) if token else None
+    request.state.user = username
+    
+    if username:
+        db = database.SessionLocal()
+        try:
+            user = db.query(models.User).filter(models.User.username == username).first()
+            request.state.user_permission = user.permission_level if user else 0
+        finally:
+            db.close()
+    else:
+        request.state.user_permission = 0
+    
     response = await call_next(request)
     return response
 
@@ -92,4 +104,4 @@ async def delete_account(request: Request, current_user: str = Depends(get_curre
     return await ui.delete_account(request, current_user, db)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=config.HOST, port=config.PORT, reload=config.DEBUG)
+    uvicorn.run("main:app", host=config.HOST, port=config.PORT, reload=config.DEBUG)
