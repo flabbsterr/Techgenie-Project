@@ -6,8 +6,32 @@
     <label for="name">Your Name:</label>
     <input type="text" id="name" name="name" placeholder="Enter your full name" required>
     
+    <label for="department">Department:</label>
+    <select id="department" name="department" required>
+        <option value="">Select your department</option>
+        <option value="Sales">Sales</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Engineering">Engineering</option>
+        <option value="HR">Human Resources</option>
+        <option value="Finance">Finance</option>
+        <option value="Operations">Operations</option>
+        <option value="Other">Other</option>
+    </select>
+    
+    <label for="category">Issue Category:</label>
+    <select id="category" name="category" required>
+        <option value="">Select issue type</option>
+        <option value="Hardware">Hardware Issue</option>
+        <option value="Software">Software Issue</option>
+        <option value="Network">Network/Connectivity</option>
+        <option value="Email">Email Problem</option>
+        <option value="Access">Access/Permissions</option>
+        <option value="Printer">Printer Issue</option>
+        <option value="Other">Other</option>
+    </select>
+    
     <label for="issue">Issue Description:</label>
-    <textarea id="issue" name="issue" placeholder="Describe the issue you're experiencing..." required></textarea>
+    <textarea id="issue" name="issue" placeholder="Please describe the issue in detail..." required></textarea>
     
     <button type="submit">Submit Ticket</button>
 </form>

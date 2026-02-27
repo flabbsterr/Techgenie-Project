@@ -9,24 +9,26 @@
 </head>
 <body>
     <header>
-        <h1>IT Support Portal</h1>
-        <nav>
-            <div class="nav-left">
-                <a href="/log">Log Ticket</a>
-                <a href="/my-tickets">My Tickets</a>
-                {% if request.state.user_permission and request.state.user_permission >= 1 %}
-                <a href="/it">IT Dashboard</a>
-                {% endif %}
-                {% if request.state.user_permission and request.state.user_permission == 2 %}
-                <a href="/manager">Manager Dashboard</a>
-                {% endif %}
-            </div>
-            <div class="nav-right">
-                <a href="/profile">Profile</a>
-                <a href="/logout">Logout ({{ request.state.user or 'User' }})</a>
-            </div>
-        </nav>
-        <hr>
+        <div class="header-container">
+            <h1>IT Support Portal</h1>
+            <nav>
+                <div class="nav-left">
+                    <a href="/log">Log Ticket</a>
+                    <a href="/my-tickets">My Tickets</a>
+                    {% if request.state is defined and request.state.user_permission is defined and request.state.user_permission == 1 %}
+                    <a href="/manager">Manager Dashboard</a>
+                    {% endif %}
+                    {% if request.state is defined and request.state.user_permission is defined and request.state.user_permission >= 2 %}
+                    <a href="/it">IT Dashboard</a>
+                    {% endif %}
+                </div>
+                <div class="nav-right">
+                    <a href="/profile">Profile</a>
+                    <a href="/logout">Logout ({{ request.state.user if (request.state is defined and request.state.user is defined) else 'User' }})</a>
+                </div>
+            </nav>
+            <hr>
+        </div>
     </header>
 
     <main>
@@ -34,10 +36,8 @@
     </main>
 
     <footer class="footer">
-        <div>
-            <h4>Need Help? Contact Support</h4>
-            <p>Phone: <strong>[PHONE_NUMBER]</strong></p>
-            <p>Email: <strong>[SUPPORT_EMAIL]</strong></p>
+        <div class="footer-content">
+            <p>IT Support Portal &copy; 2024 | Need Help? Contact: <strong>support@company.com</strong></p>
         </div>
     </footer>
 

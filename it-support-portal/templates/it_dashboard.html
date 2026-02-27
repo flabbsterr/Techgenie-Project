@@ -18,47 +18,51 @@
 </div>
 
 {% if tickets %}
+<h3 style="margin-top: 40px; color: #ff6b6b; border-left: 4px solid #ff6b6b; padding-left: 12px;">Active Tickets</h3>
 <table>
     <tr>
-        <th>Ticket ID</th>
-        <th>User</th>
-        <th>Issue</th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Dept</th>
+        <th>Category</th>
         <th>Status</th>
         <th>Priority</th>
         <th>Action</th>
     </tr>
     {% for t in tickets %}
+    {% if t.status != "Closed" %}
     <tr>
         <td><strong>#{{ t.id }}</strong></td>
-        <td>{{ t.name }} ({{ t.username }})</td>
-        <td>{{ t.issue }}</td>
+        <td>{{ t.name }}</td>
+        <td>{{ t.email }}</td>
+        <td>{{ t.department }}</td>
+        <td>{{ t.category }}</td>
         <td>
             {% if t.status == "Open" %}
-                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
+                <span class="badge badge-open">{{ t.status }}</span>
             {% elif t.status == "In Progress" %}
-                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
-            {% else %}
-                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.status }}</span>
+                <span class="badge badge-progress">{{ t.status }}</span>
             {% endif %}
         </td>
         <td>
             {% if t.priority == "High" %}
-                <span style="background-color: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
+                <span class="badge badge-high">{{ t.priority }}</span>
             {% elif t.priority == "Medium" %}
-                <span style="background-color: #ffa500; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
+                <span class="badge badge-medium">{{ t.priority }}</span>
             {% else %}
-                <span style="background-color: #51cf66; color: white; padding: 4px 8px; border-radius: 4px;">{{ t.priority }}</span>
+                <span class="badge badge-low">{{ t.priority }}</span>
             {% endif %}
         </td>
         <td>
             <form method="POST" style="display: flex; gap: 5px; align-items: center;">
                 <input type="hidden" name="ticket_id" value="{{ t.id }}">
-                <select name="status" style="padding: 4px; font-size: 12px;">
+                <select name="status" style="padding: 5px; font-size: 12px;">
                     <option value="Open" {% if t.status == "Open" %}selected{% endif %}>Open</option>
                     <option value="In Progress" {% if t.status == "In Progress" %}selected{% endif %}>In Progress</option>
                     <option value="Closed" {% if t.status == "Closed" %}selected{% endif %}>Closed</option>
                 </select>
-                <select name="priority" style="padding: 4px; font-size: 12px;">
+                <select name="priority" style="padding: 5px; font-size: 12px;">
                     <option value="Low" {% if t.priority == "Low" %}selected{% endif %}>Low</option>
                     <option value="Medium" {% if t.priority == "Medium" %}selected{% endif %}>Medium</option>
                     <option value="High" {% if t.priority == "High" %}selected{% endif %}>High</option>
@@ -67,8 +71,80 @@
             </form>
         </td>
     </tr>
+    {% endif %}
     {% endfor %}
 </table>
+
+<h3 style="margin-top: 40px; color: #51cf66; border-left: 4px solid #51cf66; padding-left: 12px;">Closed Tickets</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Dept</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Priority</th>
+        <th>Action</th>
+    </tr>
+    {% for t in tickets %}
+    {% if t.status == "Closed" %}
+    <tr style="opacity: 0.7;">
+        <td><strong>#{{ t.id }}</strong></td>
+        <td>{{ t.name }}</td>
+        <td>{{ t.email }}</td>
+        <td>{{ t.department }}</td>
+        <td>{{ t.category }}</td>
+        <td>
+            <span class="badge badge-closed">{{ t.status }}</span>
+        </td>
+        <td>
+            {% if t.priority == "High" %}
+                <span class="badge badge-high">{{ t.priority }}</span>
+            {% elif t.priority == "Medium" %}
+                <span class="badge badge-medium">{{ t.priority }}</span>
+            {% else %}
+                <span class="badge badge-low">{{ t.priority }}</span>
+            {% endif %}
+        </td>
+        <td>
+            <form method="POST" style="display: flex; gap: 5px; align-items: center;">
+                <input type="hidden" name="ticket_id" value="{{ t.id }}">
+                <select name="status" style="padding: 5px; font-size: 12px;">
+                    <option value="Open" {% if t.status == "Open" %}selected{% endif %}>Open</option>
+                    <option value="In Progress" {% if t.status == "In Progress" %}selected{% endif %}>In Progress</option>
+                    <option value="Closed" {% if t.status == "Closed" %}selected{% endif %}>Closed</option>
+                </select>
+                <select name="priority" style="padding: 5px; font-size: 12px;">
+                    <option value="Low" {% if t.priority == "Low" %}selected{% endif %}>Low</option>
+                    <option value="Medium" {% if t.priority == "Medium" %}selected{% endif %}>Medium</option>
+                    <option value="High" {% if t.priority == "High" %}selected{% endif %}>High</option>
+                </select>
+                <button type="submit" class="small">Update</button>
+            </form>
+        </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+</table>
+
+<style>
+.badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.badge-open { background-color: #ff6b6b; color: white; }
+.badge-progress { background-color: #ffa500; color: white; }
+.badge-closed { background-color: #51cf66; color: white; }
+.badge-high { background-color: #ff6b6b; color: white; }
+.badge-medium { background-color: #ffa500; color: white; }
+.badge-low { background-color: #2196F3; color: white; }
+</style>
+
 {% else %}
 <p style="text-align: center; color: #999; padding: 40px 0;">No tickets to manage.</p>
 {% endif %}

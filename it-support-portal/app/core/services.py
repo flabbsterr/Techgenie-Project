@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-import models
-import auth
+from app.db import models
+from app.core import auth
 
 class UserService:
     @staticmethod

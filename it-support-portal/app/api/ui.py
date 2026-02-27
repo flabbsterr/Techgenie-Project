@@ -47,7 +47,7 @@ async def login_post(request: Request, username: str, password: str, db: Session
 async def signup_get(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
 
-async def signup_post(request: Request, username: str, password: str, confirm_password: str, db: Session):
+async def signup_post(request: Request, username: str, email: str, password: str, confirm_password: str, db: Session):
     username = username.strip()
     password = password.strip()
     
@@ -67,8 +67,8 @@ async def signup_post(request: Request, username: str, password: str, confirm_pa
         return templates.TemplateResponse("signup.html", {"request": request, "error": "Username already exists"})
     
     hashed_password = auth.get_password_hash(password)
-    role = "it" if username.lower() == "it" else "staff"
-    user = models.User(username=username, password=hashed_password, role=role)
+    role = "it" if username.lower() == "it" else ("manager" if username.lower() == "manager" else "staff")
+    user = models.User(username=username, email=email, password=hashed_password, role=role)
     db.add(user)
     db.commit()
     
@@ -90,15 +90,26 @@ async def log_ticket_get(request: Request, current_user: str):
         return RedirectResponse(url="/login", status_code=302)
     return templates.TemplateResponse("log_ticket.html", {"request": request})
 
-async def log_ticket_post(request: Request, name: str, issue: str, current_user: str, db: Session):
+async def log_ticket_post(request: Request, name: str, email: str, department: str, category: str, issue: str, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
+    
+    user = db.query(models.User).filter(models.User.username == current_user).first()
+    user_email = user.email if user else ""
     
     name = name.strip()
     issue = issue.strip()
     
-    if name and issue:
-        ticket = models.Ticket(name=name, issue=issue, status="Open", priority="Medium")
+    if name and department and category and issue:
+        ticket = models.Ticket(
+            name=name,
+            email=user_email,
+            department=department,
+            category=category,
+            issue=issue,
+            status="Open",
+            priority="Medium"
+        )
         db.add(ticket)
         db.commit()
     
@@ -142,6 +153,7 @@ async def profile(request: Request, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
+    user = db.query(models.User).filter(models.User.username == current_user).first()
     tickets = db.query(models.Ticket).all()
     user_tickets = [t for t in tickets if t.name.lower() == current_user.lower()]
     open_tickets = len([t for t in user_tickets if t.status == "Open"])
@@ -151,7 +163,8 @@ async def profile(request: Request, current_user: str, db: Session):
         "request": request,
         "user_tickets": user_tickets,
         "open_tickets": open_tickets,
-        "closed_tickets": closed_tickets
+        "closed_tickets": closed_tickets,
+        "user_role": user.role if user else "staff"
     })
 
 async def change_password(request: Request, current_password: str, new_password: str, confirm_password: str, current_user: str, db: Session):
@@ -186,3 +199,102 @@ async def delete_account(request: Request, current_user: str, db: Session):
     response = RedirectResponse(url="/login", status_code=302)
     response.delete_cookie(key="access_token")
     return response
+
+async def manager_dashboard(request: Request, current_user: str, db: Session):
+    if not current_user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    user = db.query(models.User).filter(models.User.username == current_user).first()
+    if not user or user.role != "manager":
+        return RedirectResponse(url="/log", status_code=302)
+    
+    tickets = db.query(models.Ticket).all()
+    
+    stats = {
+        "total_tickets": len(tickets),
+        "open_tickets": len([t for t in tickets if t.status == "Open"]),
+        "in_progress_tickets": len([t for t in tickets if t.status == "In Progress"]),
+        "closed_tickets": len([t for t in tickets if t.status == "Closed"]),
+        "low_priority": len([t for t in tickets if t.priority == "Low"]),
+        "medium_priority": len([t for t in tickets if t.priority == "Medium"]),
+        "high_priority": len([t for t in tickets if t.priority == "High"])
+    }
+    
+    return templates.TemplateResponse("manager_dashboard.html", {"request": request, **stats})
+
+async def download_manager_report(request: Request, current_user: str, db: Session):
+    if not current_user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    user = db.query(models.User).filter(models.User.username == current_user).first()
+    if not user or user.role != "manager":
+        return RedirectResponse(url="/log", status_code=302)
+    
+    tickets = db.query(models.Ticket).all()
+    
+    from fastapi.responses import StreamingResponse
+    import io
+    from datetime import datetime
+    
+    report = io.StringIO()
+    report.write("IT Support Portal - Ticket Summary Report\n")
+    report.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    report.write("="*60 + "\n\n")
+    
+    report.write(f"Total Tickets: {len(tickets)}\n")
+    report.write(f"Open: {len([t for t in tickets if t.status == 'Open'])}\n")
+    report.write(f"In Progress: {len([t for t in tickets if t.status == 'In Progress'])}\n")
+    report.write(f"Closed: {len([t for t in tickets if t.status == 'Closed'])}\n\n")
+    
+    report.write(f"Priority Breakdown:\n")
+    report.write(f"High: {len([t for t in tickets if t.priority == 'High'])}\n")
+    report.write(f"Medium: {len([t for t in tickets if t.priority == 'Medium'])}\n")
+    report.write(f"Low: {len([t for t in tickets if t.priority == 'Low'])}\n\n")
+    
+    report.write("="*60 + "\n")
+    report.write("Ticket Details:\n")
+    report.write("="*60 + "\n\n")
+    
+    for ticket in tickets:
+        report.write(f"Ticket #{ticket.id}\n")
+        report.write(f"Name: {ticket.name}\n")
+        report.write(f"Email: {ticket.email}\n")
+        report.write(f"Department: {ticket.department}\n")
+        report.write(f"Category: {ticket.category}\n")
+        report.write(f"Status: {ticket.status}\n")
+        report.write(f"Priority: {ticket.priority}\n")
+        report.write(f"Issue: {ticket.issue}\n")
+        report.write("-"*60 + "\n\n")
+    
+    report.seek(0)
+    return StreamingResponse(
+        io.BytesIO(report.getvalue().encode()),
+        media_type="text/plain",
+        headers={"Content-Disposition": f"attachment; filename=ticket_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"}
+    )
+
+
+async def edit_ticket(request: Request, ticket_id: int, name: str, department: str, category: str, issue: str, current_user: str, db: Session):
+    if not current_user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+    if ticket:
+        ticket.name = name.strip()
+        ticket.department = department
+        ticket.category = category
+        ticket.issue = issue.strip()
+        db.commit()
+    
+    return RedirectResponse(url="/my-tickets", status_code=302)
+
+async def delete_ticket(request: Request, ticket_id: int, current_user: str, db: Session):
+    if not current_user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+    if ticket:
+        db.delete(ticket)
+        db.commit()
+    
+    return RedirectResponse(url="/my-tickets", status_code=302)

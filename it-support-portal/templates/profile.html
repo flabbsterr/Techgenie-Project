@@ -10,7 +10,10 @@
     <div class="profile-card">
         <h3>Account Information</h3>
         <p><strong>Username:</strong> {{ request.state.user }}</p>
-        <p><strong>Account Type:</strong> {% if request.state.user_permission >= 1 %}IT Administrator{% else %}Staff Member{% endif %}</p>
+        <p><strong>Account Type:</strong> 
+        {% if user_role == 'it' %}IT Administrator
+        {% elif user_role == 'manager' %}Manager
+        {% else %}Staff Member{% endif %}</p>
         <p><strong>Status:</strong> <span style="color: #51cf66;">Active</span></p>
     </div>
     

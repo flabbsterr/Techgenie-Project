@@ -4,12 +4,19 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f5f5;
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 body.dark-mode {
@@ -431,13 +438,16 @@ header {
     padding: 8px 10px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    margin: 5px 5px 5px 5px;
+    margin: 5px auto;
+    border-bottom: 3px solid #2196F3;
+    max-width: 1200px;
 }
 
 body.dark-mode header {
     background-color: #2a2a2a;
     background-image: linear-gradient(135deg, #2a2a2a 0%, #242424 100%);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-bottom: 3px solid #ffa500;
 }
 
 header h1 {
@@ -536,6 +546,7 @@ main {
     max-width: 1200px;
     margin: 5px auto;
     transition: background-color 0.3s ease;
+    flex: 1;
 }
 
 body.dark-mode main {
@@ -990,41 +1001,362 @@ body.dark-mode .stat-label {
 }
 
 .footer {
-    margin-top: 50px;
+    margin-top: auto;
     padding: 20px;
     background-color: #f8f9fa;
     text-align: center;
     border-top: 1px solid #dee2e6;
     transition: background-color 0.3s ease, border-color 0.3s ease;
-    max-width: 1200px;`n    margin-left: auto;`n    margin-right: auto;`n}
+    width: 100%;
+}
 
 body.dark-mode .footer {
     background-color: #2a2a2a;
     border-top-color: #3a3a3a;
-    max-width: 1200px;`n    margin-left: auto;`n    margin-right: auto;`n}
-
-.footer h4 {
-    color: #333;
-    margin-bottom: 10px;
 }
 
-body.dark-mode .footer h4 {
-    color: #e0e0e0;
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    display: block;
 }
 
-.footer p {
+.footer-content p {
     color: #666;
+    margin: 0;
+    font-size: 14px;
 }
 
-body.dark-mode .footer p {
+body.dark-mode .footer-content p {
     color: #b0b0b0;
 }
 
-.footer strong {
+.footer-content strong {
     color: #333;
 }
 
-body.dark-mode .footer strong {
+body.dark-mode .footer-content strong {
     color: #ffa500;
 }
 
+
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+/* Subtle UI Improvements */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    min-height: 400px;
+}
+
+/* Improved card shadows */
+.profile-card, .stat-card, .chart-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-card:hover, .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body.dark-mode .profile-card:hover, body.dark-mode .stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Better input focus states */
+input:focus, textarea:focus, select:focus {
+    transform: scale(1.01);
+}
+
+/* Smooth page transitions */
+main > * {
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Better table row hover */
+tbody tr {
+    transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+    transform: scale(1.005);
+}
+
+/* Improved button states */
+button, .action-btn, a[href*="download"] {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button:hover, .action-btn:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Better form styling */
+form {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Improved header */
+header {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+body.dark-mode header {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Better spacing for content */
+h2 {
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+body.dark-mode h2 {
+    border-bottom-color: #3a3a3a;
+}
+
+/* Improved empty states */
+p[style*="text-align: center"] {
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+body.dark-mode p[style*="text-align: center"] {
+    background: #2a2a2a;
+}
+
+
+/* Email input styling */
+input[type="email"] {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+body.dark-mode input[type="email"] {
+    background-color: #2a2a2a;
+    border-color: #4a4a4a;
+    color: #e0e0e0;
+}
+
+input[type="email"]:focus {
+    outline: none;
+    border-color: #555;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    transform: scale(1.01);
+}
+
+body.dark-mode input[type="email"]:focus {
+    border-color: #ffa500;
+    box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.1);
+}
+
+
+/* Enhanced UI Improvements */
+body {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+body.dark-mode {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+header {
+    backdrop-filter: blur(10px);
+}
+
+main {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode main {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+table {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+body.dark-mode table {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.badge {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 11px;
+}
+
+button.small {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    border: none;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+}
+
+button.small:hover {
+    box-shadow: 0 4px 10px rgba(33, 150, 243, 0.4);
+}
+
+.modal {
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+input, textarea, select {
+    background: white;
+}
+
+body.dark-mode input, 
+body.dark-mode textarea, 
+body.dark-mode select {
+    background-color: #1f1f1f;
+}
+
+.login-container {
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15);
+}
+
+body.dark-mode .login-container {
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.6);
+}
+
+
+/* Main Content UX Improvements */
+main {
+    padding: 25px;
+    min-height: 500px;
+}
+
+main > h2:first-child {
+    margin-top: 0;
+    font-size: 28px;
+}
+
+main > p:first-of-type {
+    font-size: 16px;
+    margin-bottom: 25px;
+    opacity: 0.9;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Better focus indicators for accessibility */
+a:focus, button:focus, input:focus, select:focus, textarea:focus {
+    outline: 3px solid #2196F3;
+    outline-offset: 2px;
+}
+
+body.dark-mode a:focus, 
+body.dark-mode button:focus, 
+body.dark-mode input:focus, 
+body.dark-mode select:focus, 
+body.dark-mode textarea:focus {
+    outline-color: #ffa500;
+}
+
+/* Loading states */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Better link styling */
+a {
+    transition: all 0.2s ease;
+}
+
+/* Improved spacing */
+form > * + * {
+    margin-top: 0;
+}
+
+/* Better error messages */
+.error {
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    main {
+        padding: 15px;
+        margin: 5px;
+    }
+    
+    header {
+        margin: 5px;
+    }
+    
+    table {
+        font-size: 14px;
+    }
+    
+    th, td {
+        padding: 10px;
+    }
+}
+
+/* Better selection styling */
+::selection {
+    background: #2196F3;
+    color: white;
+}
+
+body.dark-mode ::selection {
+    background: #ffa500;
+    color: #1a1a1a;
+}
+
+/* Smooth transitions for theme switching */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+button, a, input, select, textarea {
+    transition: all 0.3s ease;
+}
