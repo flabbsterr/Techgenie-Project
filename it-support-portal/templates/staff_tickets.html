@@ -6,6 +6,7 @@
 <table>
     <tr>
         <th>ID</th>
+        <th>Created</th>
         <th>Email</th>
         <th>Department</th>
         <th>Category</th>
@@ -17,6 +18,7 @@
     {% for t in tickets %}
     <tr>
         <td><strong>#{{ t.id }}</strong></td>
+        <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') if t.created_at else 'N/A' }}</td>
         <td>{{ t.email }}</td>
         <td>{{ t.department }}</td>
         <td>{{ t.category }}</td>
@@ -39,10 +41,10 @@
                 <span class="badge badge-low">{{ t.priority }}</span>
             {% endif %}
         </td>
-        <td>
-            <button class="small" onclick="viewTicket({{ t.id }}, '{{ t.name }}', '{{ t.email }}', '{{ t.department }}', '{{ t.category }}', `{{ t.issue|replace('`', '\\`') }}`)">View</button>
-            <button class="small" style="background: #ffa500;" onclick="editTicket({{ t.id }}, '{{ t.name }}', '{{ t.department }}', '{{ t.category }}', `{{ t.issue|replace('`', '\\`') }}`)">Edit</button>
-            <button class="small" style="background: #ff6b6b;" onclick="deleteTicket({{ t.id }})">Delete</button>
+        <td style="white-space: nowrap;">
+            <button class="small" onclick="viewTicket({{ t.id }}, '{{ t.name }}', '{{ t.email }}', '{{ t.department }}', '{{ t.category }}', `{{ t.issue|replace('`', '\\`') }}`, '{{ t.created_at.strftime('%Y-%m-%d %H:%M:%S') if t.created_at else 'N/A' }}')">View</button>
+            <button class="small" style="background: #ffa500; margin-left: 5px;" onclick="editTicket({{ t.id }}, '{{ t.name }}', '{{ t.department }}', '{{ t.category }}', `{{ t.issue|replace('`', '\\`') }}`)">Edit</button>
+            <button class="small" style="background: #ff6b6b; margin-left: 5px;" onclick="deleteTicket({{ t.id }})">Delete</button>
         </td>
     </tr>
     {% endfor %}
@@ -53,6 +55,7 @@
         <h3>Ticket Details</h3>
         <div class="ticket-details">
             <p><strong>Ticket ID:</strong> <span id="viewId"></span></p>
+            <p><strong>Created:</strong> <span id="viewCreated"></span></p>
             <p><strong>Name:</strong> <span id="viewName"></span></p>
             <p><strong>Email:</strong> <span id="viewEmail"></span></p>
             <p><strong>Department:</strong> <span id="viewDepartment"></span></p>
@@ -155,8 +158,9 @@ body.dark-mode .modal-content #viewIssue {
 </style>
 
 <script>
-function viewTicket(id, name, email, department, category, issue) {
+function viewTicket(id, name, email, department, category, issue, created) {
     document.getElementById('viewId').textContent = '#' + id;
+    document.getElementById('viewCreated').textContent = created;
     document.getElementById('viewName').textContent = name;
     document.getElementById('viewEmail').textContent = email;
     document.getElementById('viewDepartment').textContent = department;

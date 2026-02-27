@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
+from datetime import datetime
 from app.db.database import Base
 
 class User(Base):
@@ -21,3 +22,4 @@ class Ticket(Base):
     issue = Column(String)
     status = Column(String)
     priority = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
