@@ -1,28 +1,13 @@
-from fastapi import FastAPI, Request, Form, Depends, HTTPException, status, Cookie
+from fastapi import Request, Form, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-import fastapi_models as models
-import fastapi_database as database
-import fastapi_schemas as schemas
-import fastapi_auth as auth
-from typing import Optional
 from datetime import timedelta
+import app.core.auth as auth
+import app.db.database as database
+import app.db.models as models
 
-app = FastAPI()
-
-@app.middleware("http")
-async def add_user_to_request(request: Request, call_next):
-    token = request.cookies.get("access_token")
-    request.state.user = auth.verify_token(token) if token else None
-    response = await call_next(request)
-    return response
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-
-models.Base.metadata.create_all(bind=database.engine)
 
 def get_db():
     db = database.SessionLocal()
@@ -31,23 +16,20 @@ def get_db():
     finally:
         db.close()
 
-def get_current_user(token: Optional[str] = Cookie(None, alias="access_token")):
+def get_current_user(token: str = None):
     if not token:
         return None
     return auth.verify_token(token)
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request, current_user: str = Depends(get_current_user)):
+async def home(request: Request, current_user: str = None):
     if current_user:
         return RedirectResponse(url="/log", status_code=302)
     return RedirectResponse(url="/login", status_code=302)
 
-@app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
-@app.post("/login")
-async def login_post(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+async def login_post(request: Request, username: str, password: str, db: Session):
     username = username.replace(" ", "")
     user = db.query(models.User).filter(models.User.username == username).first()
     
@@ -62,12 +44,10 @@ async def login_post(request: Request, username: str = Form(...), password: str 
     
     return templates.TemplateResponse("login.html", {"request": request, "error": "Invalid credentials", "username": username})
 
-@app.get("/signup", response_class=HTMLResponse)
 async def signup_get(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
 
-@app.post("/signup")
-async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), db: Session = Depends(get_db)):
+async def signup_post(request: Request, username: str, password: str, confirm_password: str, db: Session):
     username = username.strip()
     password = password.strip()
     
@@ -87,7 +67,8 @@ async def signup_post(request: Request, username: str = Form(...), password: str
         return templates.TemplateResponse("signup.html", {"request": request, "error": "Username already exists"})
     
     hashed_password = auth.get_password_hash(password)
-    user = models.User(username=username, password=hashed_password)
+    role = "it" if username.lower() == "it" else "staff"
+    user = models.User(username=username, password=hashed_password, role=role)
     db.add(user)
     db.commit()
     
@@ -99,20 +80,17 @@ async def signup_post(request: Request, username: str = Form(...), password: str
     response.set_cookie(key="access_token", value=access_token, httponly=True)
     return response
 
-@app.get("/logout")
 async def logout(request: Request):
     response = RedirectResponse(url="/login", status_code=302)
     response.delete_cookie(key="access_token")
     return response
 
-@app.get("/log", response_class=HTMLResponse)
-async def log_ticket_get(request: Request, current_user: str = Depends(get_current_user)):
+async def log_ticket_get(request: Request, current_user: str):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     return templates.TemplateResponse("log_ticket.html", {"request": request})
 
-@app.post("/log")
-async def log_ticket_post(request: Request, name: str = Form(...), issue: str = Form(...), current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def log_ticket_post(request: Request, name: str, issue: str, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
@@ -126,16 +104,14 @@ async def log_ticket_post(request: Request, name: str = Form(...), issue: str = 
     
     return RedirectResponse(url="/my-tickets", status_code=302)
 
-@app.get("/my-tickets", response_class=HTMLResponse)
-async def staff_tickets(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def staff_tickets(request: Request, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
     tickets = db.query(models.Ticket).all()
     return templates.TemplateResponse("staff_tickets.html", {"request": request, "tickets": tickets})
 
-@app.get("/it", response_class=HTMLResponse)
-async def it_dashboard_get(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def it_dashboard_get(request: Request, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
@@ -150,8 +126,7 @@ async def it_dashboard_get(request: Request, current_user: str = Depends(get_cur
         "closed_count": closed_count
     })
 
-@app.post("/it")
-async def it_dashboard_post(request: Request, ticket_id: int = Form(...), status: str = Form(...), priority: str = Form(...), current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def it_dashboard_post(request: Request, ticket_id: int, status: str, priority: str, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
@@ -163,8 +138,7 @@ async def it_dashboard_post(request: Request, ticket_id: int = Form(...), status
     
     return RedirectResponse(url="/it", status_code=302)
 
-@app.get("/profile", response_class=HTMLResponse)
-async def profile(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def profile(request: Request, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
@@ -180,8 +154,7 @@ async def profile(request: Request, current_user: str = Depends(get_current_user
         "closed_tickets": closed_tickets
     })
 
-@app.post("/change-password")
-async def change_password(request: Request, current_password: str = Form(...), new_password: str = Form(...), confirm_password: str = Form(...), current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def change_password(request: Request, current_password: str, new_password: str, confirm_password: str, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
@@ -201,8 +174,7 @@ async def change_password(request: Request, current_password: str = Form(...), n
     
     return RedirectResponse(url="/profile", status_code=302)
 
-@app.get("/delete-account")
-async def delete_account(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def delete_account(request: Request, current_user: str, db: Session):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
@@ -214,7 +186,3 @@ async def delete_account(request: Request, current_user: str = Depends(get_curre
     response = RedirectResponse(url="/login", status_code=302)
     response.delete_cookie(key="access_token")
     return response
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)

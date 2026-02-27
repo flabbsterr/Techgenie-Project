@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from .database import Base
+from app.db.database import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -7,6 +7,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     password = Column(String)
+    role = Column(String, default="staff")
 
 class Ticket(Base):
     __tablename__ = "tickets"

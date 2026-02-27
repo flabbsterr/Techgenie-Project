@@ -5,22 +5,37 @@ from sqlalchemy.orm import Session
 from typing import Optional
 import uvicorn
 
+try:
+    from slowapi import Limiter, _rate_limit_exceeded_handler
+    from slowapi.util import get_remote_address
+    from slowapi.errors import RateLimitExceeded
+    RATE_LIMIT_ENABLED = True
+except ImportError:
+    RATE_LIMIT_ENABLED = False
+
 # Import modules
-import database
-import models
-import auth
-import ui
-import services
-import config
+import app.db.database as database
+import app.db.models as models
+import app.core.auth as auth
+import app.api.ui as ui
+import app.core.services as services
+import app.core.config as config
 
 # Create FastAPI app
 app = FastAPI(title=config.config.APP_NAME, version=config.config.VERSION)
+
+# Create rate limiter if available
+if RATE_LIMIT_ENABLED:
+    limiter = Limiter(key_func=get_remote_address)
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Add middleware
 @app.middleware("http")
 async def add_user_to_request(request: Request, call_next):
     token = request.cookies.get("access_token")
     request.state.user = auth.verify_token(token) if token else None
+    request.state.user_permission = 0
     response = await call_next(request)
     return response
 
@@ -52,17 +67,29 @@ async def home(request: Request, current_user: str = Depends(get_current_user)):
 async def login_get(request: Request):
     return await ui.login_get(request)
 
-@app.post("/login")
-async def login_post(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-    return await ui.login_post(request, username, password, db)
+if RATE_LIMIT_ENABLED:
+    @app.post("/login")
+    @limiter.limit("5/minute")
+    async def login_post(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+        return await ui.login_post(request, username, password, db)
+else:
+    @app.post("/login")
+    async def login_post(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+        return await ui.login_post(request, username, password, db)
 
 @app.get("/signup", response_class=HTMLResponse)
 async def signup_get(request: Request):
     return await ui.signup_get(request)
 
-@app.post("/signup")
-async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), db: Session = Depends(get_db)):
-    return await ui.signup_post(request, username, password, confirm_password, db)
+if RATE_LIMIT_ENABLED:
+    @app.post("/signup")
+    @limiter.limit("3/minute")
+    async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), db: Session = Depends(get_db)):
+        return await ui.signup_post(request, username, password, confirm_password, db)
+else:
+    @app.post("/signup")
+    async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), db: Session = Depends(get_db)):
+        return await ui.signup_post(request, username, password, confirm_password, db)
 
 @app.get("/logout")
 async def logout(request: Request):
@@ -101,4 +128,4 @@ async def delete_account(request: Request, current_user: str = Depends(get_curre
     return await ui.delete_account(request, current_user, db)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=config.config.HOST, port=config.config.PORT, reload=config.config.DEBUG)
+    uvicorn.run("app:app", host=config.config.HOST, port=config.config.PORT, reload=config.config.DEBUG)
