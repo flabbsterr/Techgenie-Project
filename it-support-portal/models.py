@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from app.db.database import Base
+from database import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -7,11 +7,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     password = Column(String)
-<<<<<<< HEAD:it-support-portal/app/db/models.py
-    role = Column(String, default="staff")
-=======
     permission_level = Column(Integer, default=0)  # 0=user, 1=admin, 2=manager
->>>>>>> refs/remotes/origin/main:it-support-portal/src/database/models.py
 
 class Ticket(Base):
     __tablename__ = "tickets"

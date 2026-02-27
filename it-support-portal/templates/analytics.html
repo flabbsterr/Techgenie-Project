@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="page">
+    <h2>Analytics Dashboard</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div style="background-color: #fafafa; padding: 25px; border-radius: 12px; border: 1px solid #e0e0e0;">
+            <h3 style="color: #333; margin-bottom: 20px;">Key Metrics</h3>
+            <p><strong>Total Tickets:</strong> {{ analytics.total_tickets }}</p>
+            <p><strong>Resolution Rate:</strong> {{ "%.1f"|format(analytics.resolution_rate) }}%</p>
+            <p><strong>High Priority Rate:</strong> {{ "%.1f"|format(analytics.high_priority_percentage) }}%</p>
+        </div>
+        <div style="background-color: #fafafa; padding: 25px; border-radius: 12px; border: 1px solid #e0e0e0;">
+            <h3 style="color: #333; margin-bottom: 20px;">Status Breakdown</h3>
+            {% for status, count in analytics.status_breakdown.items() %}
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>{{ status }}:</span>
+                <span><strong>{{ count }}</strong></span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div style="background-color: #fafafa; padding: 25px; border-radius: 12px; border: 1px solid #e0e0e0;">
+            <h3 style="color: #333; margin-bottom: 20px;">Priority Distribution</h3>
+            {% for priority, count in analytics.priority_breakdown.items() %}
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>{{ priority }}:</span>
+                <span><strong>{{ count }}</strong></span>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="background-color: #fafafa; padding: 25px; border-radius: 12px; border: 1px solid #e0e0e0;">
+            <h3 style="color: #333; margin-bottom: 20px;">Actions</h3>
+            <a href="/manager/report" style="text-decoration: none;">
+                <button style="width: 100%; margin-bottom: 10px;">Download Report</button>
+            </a>
+            <a href="/manager" style="text-decoration: none;">
+                <button style="width: 100%; background: #666;">Back to Dashboard</button>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

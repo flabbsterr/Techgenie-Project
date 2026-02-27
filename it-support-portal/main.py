@@ -5,54 +5,20 @@ from sqlalchemy.orm import Session
 from typing import Optional
 import uvicorn
 
-try:
-    from slowapi import Limiter, _rate_limit_exceeded_handler
-    from slowapi.util import get_remote_address
-    from slowapi.errors import RateLimitExceeded
-    RATE_LIMIT_ENABLED = True
-except ImportError:
-    RATE_LIMIT_ENABLED = False
+from src.database import database, models
+from src.auth import auth
+from src.routes import ui
+from src.services import services
+from src.config import config
 
-# Import modules
-<<<<<<< HEAD
-import app.db.database as database
-import app.db.models as models
-import app.core.auth as auth
-import app.api.ui as ui
-import app.core.services as services
-import app.core.config as config
-=======
-import database
-import models
-import auth
-import ui
-import services
-import config
-import manager_routes
-import permissions
->>>>>>> refs/remotes/origin/main
+app = FastAPI(title=config.APP_NAME, version=config.VERSION)
 
-# Create FastAPI app
-app = FastAPI(title=config.config.APP_NAME, version=config.config.VERSION)
-
-# Create rate limiter if available
-if RATE_LIMIT_ENABLED:
-    limiter = Limiter(key_func=get_remote_address)
-    app.state.limiter = limiter
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-# Add middleware
 @app.middleware("http")
 async def add_user_to_request(request: Request, call_next):
     token = request.cookies.get("access_token")
-<<<<<<< HEAD
-    request.state.user = auth.verify_token(token) if token else None
-    request.state.user_permission = 0
-=======
     username = auth.verify_token(token) if token else None
     request.state.user = username
     
-    # Add permission level to request state
     if username:
         db = database.SessionLocal()
         try:
@@ -63,17 +29,12 @@ async def add_user_to_request(request: Request, call_next):
     else:
         request.state.user_permission = 0
     
->>>>>>> refs/remotes/origin/main
     response = await call_next(request)
     return response
 
-# Mount static files
-app.mount("/static", StaticFiles(directory=config.config.STATIC_DIR), name="static")
-
-# Create database tables
+app.mount("/static", StaticFiles(directory="static"), name="static")
 models.Base.metadata.create_all(bind=database.engine)
 
-# Dependency functions
 def get_db():
     db = database.SessionLocal()
     try:
@@ -86,7 +47,6 @@ def get_current_user(token: Optional[str] = Cookie(None, alias="access_token")):
         return None
     return auth.verify_token(token)
 
-# Routes
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, current_user: str = Depends(get_current_user)):
     return await ui.home(request, current_user)
@@ -95,29 +55,17 @@ async def home(request: Request, current_user: str = Depends(get_current_user)):
 async def login_get(request: Request):
     return await ui.login_get(request)
 
-if RATE_LIMIT_ENABLED:
-    @app.post("/login")
-    @limiter.limit("5/minute")
-    async def login_post(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-        return await ui.login_post(request, username, password, db)
-else:
-    @app.post("/login")
-    async def login_post(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-        return await ui.login_post(request, username, password, db)
+@app.post("/login")
+async def login_post(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    return await ui.login_post(request, username, password, db)
 
 @app.get("/signup", response_class=HTMLResponse)
 async def signup_get(request: Request):
     return await ui.signup_get(request)
 
-if RATE_LIMIT_ENABLED:
-    @app.post("/signup")
-    @limiter.limit("3/minute")
-    async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), db: Session = Depends(get_db)):
-        return await ui.signup_post(request, username, password, confirm_password, db)
-else:
-    @app.post("/signup")
-    async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), db: Session = Depends(get_db)):
-        return await ui.signup_post(request, username, password, confirm_password, db)
+@app.post("/signup")
+async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), db: Session = Depends(get_db)):
+    return await ui.signup_post(request, username, password, confirm_password, db)
 
 @app.get("/logout")
 async def logout(request: Request):
@@ -155,26 +103,5 @@ async def change_password(request: Request, current_password: str = Form(...), n
 async def delete_account(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
     return await ui.delete_account(request, current_user, db)
 
-# Manager routes
-@app.get("/manager", response_class=HTMLResponse)
-async def manager_dashboard(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    return await manager_routes.manager_dashboard(request, current_user, db)
-
-@app.get("/manager/analytics", response_class=HTMLResponse)
-async def view_analytics(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    return await manager_routes.view_analytics(request, current_user, db)
-
-@app.get("/manager/report")
-async def generate_report(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    return await manager_routes.generate_report(request, current_user, db)
-
-@app.post("/manager/assign-admin")
-async def assign_admin(request: Request, user_id: int = Form(...), action: str = Form(...), current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    return await manager_routes.assign_admin(request, user_id, action, current_user, db)
-
 if __name__ == "__main__":
-<<<<<<< HEAD
-    uvicorn.run("app:app", host=config.config.HOST, port=config.config.PORT, reload=config.config.DEBUG)
-=======
-    uvicorn.run("app:app", host=config.config.HOST, port=config.config.PORT, reload=True)
->>>>>>> refs/remotes/origin/main
+    uvicorn.run("main:app", host=config.HOST, port=config.PORT, reload=config.DEBUG)
