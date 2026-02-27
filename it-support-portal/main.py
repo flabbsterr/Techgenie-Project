@@ -148,5 +148,13 @@ async def manager_dashboard(request: Request, current_user: str = Depends(get_cu
 async def download_manager_report(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
     return await ui.download_manager_report(request, current_user, db)
 
+@app.get("/manage-users", response_class=HTMLResponse)
+async def manage_users_get(request: Request, current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    return await ui.manage_users_get(request, current_user, db)
+
+@app.post("/manage-users/update-role")
+async def update_user_role(request: Request, user_id: int = Form(...), role: str = Form(...), current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    return await ui.update_user_role(request, user_id, role, current_user, db)
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host=config.config.HOST, port=config.config.PORT, reload=config.config.DEBUG)

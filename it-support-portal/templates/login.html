@@ -17,7 +17,7 @@
         {% endif %}
         
         <form method="POST">
-            <label for="username">Username:</label>
+            <label for="username">Username or Email:</label>
             <input type="text" id="username" name="username" required autofocus value="{{ username or '' }}" oninput="this.value = this.value.replace(/\s/g, '')" onpaste="setTimeout(() => this.value = this.value.replace(/\s/g, ''), 0)">
             
             <label for="password">Password:</label>

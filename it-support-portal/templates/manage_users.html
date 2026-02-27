@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Manage Users</h2>
+<p>Assign roles and manage user access levels.</p>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Current Role</th>
+        <th>Change Role</th>
+    </tr>
+    {% for u in users %}
+    <tr>
+        <td><strong>#{{ u.id }}</strong></td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>
+            {% if u.role == "it" %}
+                <span class="badge badge-it">IT Admin</span>
+            {% elif u.role == "manager" %}
+                <span class="badge badge-manager">Manager</span>
+            {% else %}
+                <span class="badge badge-staff">Staff</span>
+            {% endif %}
+        </td>
+        <td>
+            <form method="POST" action="/manage-users/update-role" style="display: inline-block;">
+                <input type="hidden" name="user_id" value="{{ u.id }}">
+                <select name="role" onchange="this.form.submit()">
+                    <option value="staff" {% if u.role == "staff" %}selected{% endif %}>Staff</option>
+                    <option value="manager" {% if u.role == "manager" %}selected{% endif %}>Manager</option>
+                    <option value="it" {% if u.role == "it" %}selected{% endif %}>IT Admin</option>
+                </select>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<style>
+.badge-it { background-color: #9c27b0; color: white; }
+.badge-manager { background-color: #ff9800; color: white; }
+.badge-staff { background-color: #2196F3; color: white; }
+
+select {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+}
+
+body.dark-mode select {
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #444;
+}
+</style>
+{% endblock %}

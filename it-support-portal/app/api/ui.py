@@ -31,12 +31,14 @@ async def login_get(request: Request):
 
 async def login_post(request: Request, username: str, password: str, db: Session):
     username = username.replace(" ", "")
-    user = db.query(models.User).filter(models.User.username == username).first()
+    user = db.query(models.User).filter(
+        (models.User.username == username) | (models.User.email == username)
+    ).first()
     
     if user and auth.verify_password(password, user.password):
         access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = auth.create_access_token(
-            data={"sub": username}, expires_delta=access_token_expires
+            data={"sub": user.username}, expires_delta=access_token_expires
         )
         response = RedirectResponse(url="/log", status_code=302)
         response.set_cookie(key="access_token", value=access_token, httponly=True)
@@ -298,3 +300,29 @@ async def delete_ticket(request: Request, ticket_id: int, current_user: str, db:
         db.commit()
     
     return RedirectResponse(url="/my-tickets", status_code=302)
+
+async def manage_users_get(request: Request, current_user: str, db: Session):
+    if not current_user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    user = db.query(models.User).filter(models.User.username == current_user).first()
+    if not user or user.role != "it":
+        return RedirectResponse(url="/log", status_code=302)
+    
+    users = db.query(models.User).all()
+    return templates.TemplateResponse("manage_users.html", {"request": request, "users": users})
+
+async def update_user_role(request: Request, user_id: int, role: str, current_user: str, db: Session):
+    if not current_user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    admin = db.query(models.User).filter(models.User.username == current_user).first()
+    if not admin or admin.role != "it":
+        return RedirectResponse(url="/log", status_code=302)
+    
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user and role in ["staff", "manager", "it"]:
+        user.role = role
+        db.commit()
+    
+    return RedirectResponse(url="/manage-users", status_code=302)
